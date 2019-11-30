@@ -1,0 +1,26 @@
+;This is a PIC16F87A project
+,Run in MPLAB IDE
+
+PROCESSOR PIC16P873A
+INCLUDE <P16F873A.inc>
+__CONFIG _XT_OSC & _WDT_OFF & _PWRTE_ON
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+cblock 0x20
+    OPER1
+    OPER2
+    OPER3
+    RESULTADO
+endc
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    ORG 0
+    movlw   d'15'	  	; 15-> w
+    movwf   OPER1		  ;(w)-> OPER1
+    movlw   d'20'		  ;20d-> w
+    movwf   OPER2		  ;(w)-> OPER2
+    movlw   d'5'		  ;5d-> w
+    movwf   OPER3		  ;(w)-> OPER3
+    addwf   OPER1,w	  ;(w) + OPER1
+    addwf   OPER2,w	  ;(w) + OPER2
+    movwf   RESULTADO	;(w)-> RESULTADO  
+    SLEEP
+END
