@@ -1,0 +1,41 @@
+;This is a PIC16F87A project
+;Run in MPLAB IDE
+
+PROCESSOR   PIC16F873A
+INCLUDE     <P16F873A.inc>
+__CONFIG    _XT_OSC & _PWRTE_ON & _WDT_OFF
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    CBLOCK  0X20
+	
+	    C1  ;Producto
+	    A1  ;Multiplicando
+	    A2  ;Auxiliar
+	    B1  ;Multiplocador
+
+    ENDC
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	    ORG 0   ;Vector de Reset
+		CLRF    C1	    ; (C1)=0
+		MOVLW   D'25'	    ; 25d -> W
+		MOVWF   A1	    ; (W) -> A1
+		MOVWF   A2	    ; (W)=25->A2
+		MOVLW   D'10'	    ; 10d -> W
+		MOVWF   B1	    ; (W) -> B1
+		MOVLW   D'1'	    ; D'1'1d->W
+		SUBWF   B1,W	    ;(B1)-(W)->W
+		BTFSS   STATUS,Z    ;<status,<>=1?
+	 	GOTO    OPERACION ;NO!
+	    	GOTO    FIN_1	    ;SI!
+OPERACION   	DECF    B1,F	    ;(B1)-1->B1
+CICLO	   	MOVF    A2,W	    ;(A2)->W
+	    	ADDWF   A1,F	    ;(A1)+(W)–>A1
+	    	DECFSZ  B1,F	    ;(B1)-1->B1y(B1)=0?
+	    	GOTO    CICLO	    ;NO
+FIN_1	    	MOVF    A1,W	    ;(A1)->W
+	    	MOVWF   C1	    ;(W)->C1
+	    	SLEEP
+    END
