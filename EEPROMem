@@ -1,0 +1,57 @@
+;This is a EEPROM Memory project
+;Run in MPLAB IDE
+
+PROCESSOR   PIC16F84A
+INCLUDE	    <P16F84A.inc>
+__CONFIG    _XT_OSC & _WDT_OFF & _PWRTE_ON
+;------------------------------------------------------------------------------
+    CBLOCK  0x0C
+	    CLAVE
+	    CONTROL
+    ENDC
+;------------------------------------------------------------------------------
+    ORG 0
+		MOVLW	d'99'		;99d--> W
+		MOVWF	CLAVE		;(W)--> CLAVE
+		MOVWF	EEDATA	;(W)=(CLAVE)--> EEDATA
+     REPETIR	CLRF	CONTROL		;(CONTROL)=0
+		MOVLW	0x3F		;3Fh--> W
+		MOVWF	EEADR		;(W)--> EEADR
+		CALL	ESCRITURA   
+		MOVLW	0x3F		;3Fh--> W
+		MOVWF	EEADR		;(W)--> EEADR
+		CALL	LECTURA	    
+		MOVF	EEDATA,W	;(EEDATA)--> W
+		MOVWF	CONTROL		;(W)--> CONTROL
+		SUBWF	CLAVE,W		;(CLAVE)-(W)--> W
+		BTFSS	STATUS,Z	;<STATUS,Z>=1?
+		GOTO	REPETIR		;NO!
+     DORMIR	SLEEP		;SI!
+		GOTO	DORMIR	  
+;------------------------------------------------------------------------------
+     ESCRITURA	BSF	STATUS,RP0	;<STATUS,RP0>=1, B0 AL B1
+     REPITE     BSF	EECON1,WREN	;<EECON1,WREN>=1
+		BCF	EECON1,WRERR	;<EECON1,WRERR>=0
+		MOVLW	0x55	    	;0x55--> W
+		MOVWF	EECON2		  ;(W)--> EECON2
+		MOVLW	0xAA		    ;OxAA--> w
+		MOVWF	EECON2		  ;(W)--> EECON2
+		BSF	EECON1,WR	    ;<EECON1,WR>=1
+     ESPERA     BTFSC	EECON1,WR	;(EECON1,WR)=0?
+		GOTO	ESPERA		  ;NO!
+		BTFSS	EECON1,WRERR	;<EECON1,WRERR>=1?
+		GOTO	SIGUE		    ;NO!
+		GOTO	REPITE		  ;SI!
+     SIGUE	BCF	EECON1,WREN	;WREN=0
+		BCF	STATUS,RP0	  ;B1 AL B0
+		RETURN 
+		
+     LECTURA	BSF	STATUS,RP0	;B0 AL B1
+		BSF	EECON1,RD	;<EECON1,RD>=1
+     ESPERA_2	BTFSC	EECON1,RD	;<EECON1,RD>=0?
+		GOTO	ESPERA_2	  ;NO!
+		BCF	STATUS,RP0	  ;B1 AL B0
+		RETURN 
+		
+END
+
