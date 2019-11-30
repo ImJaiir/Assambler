@@ -1,0 +1,25 @@
+;This is a PIC16F87A, run in MPLAB IDE
+;2 operators sum
+
+PROCESSOR PIC16F87A
+INCLUDE <P16f873A.inc>
+__CONFIG _BODEN_OFF & _CP_OFF & _WRT_OFF & _PWRTE_ON & _WDT_OFF & _XT_OSC & _DEBUG_OFF & _CPD_OFF & _LVP_OFF
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    OPER1 	EQU 0x20    ; Direccion en donde se almacena el primer operando.
+    OPER2	EQU 0x21    ; Direccion en donde se almacena el segundo operando.
+    RESULTADO	EQU 0x22    ; Direccion en donde se almacena el resultado de las operaciones.	
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	ORG 0
+		movlw   D'10'	     ; 10d -> w
+		movwf   OPER1	     ; (w) -> OPER1
+		movlw   D'20'	     ; 20d -> w
+		movwf   OPER2	     ; (w) -> OPER2		    
+		movf    OPER1,w	   ;(OPER1) -> w
+		addwf   OPER2,w	   ;(OPER2) + (w) -> W
+		movwf   RESULTADO  ;(W) -> RESULTADO
+	loop	goto    loop
+    END
