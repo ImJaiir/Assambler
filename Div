@@ -1,0 +1,38 @@
+;This is a PIC16f87A
+;Run in MPLAB IDE
+
+PROCESSOR   PIC16F873A
+INCLUDE     <P16F873A.inc>
+__CONFIG    _XT_OSC & _PWRTE_ON & _WDT_OFF
+
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    CBLOCK  0X20
+	
+	D1  ; DIVISOR
+	D2  ; DIVIDIENDO
+	C1  ; COCIENTE
+	R1  ; RESIDUO
+	
+    ENDC
+	
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    ORG 0
+	
+	    	movlw	 d'13'	    ; 13d->w
+	 	    movwf  D1	        ; (w)->D1
+	   	  movlw	 d'200'	    ; 200d->w
+	    	movwf	 D2	        ; (w)->D2	   
+	    	clrf   C1	        ; (C1)=0
+	   	clrf	 R1	          ; (R1)=0
+    	otro     incf	 C1,F ; (C1)+1->C1
+	    	movf	 D1,W	      ; (D1)->W
+	    	subwf	 D2,F	      ; (D2)->(W)->D2	
+	    	subwf	 D2,W	      ; (D2)->(W)->W
+	    	btfsc	 STATUS,C   ; <STATUS,C>=0?
+	    	goto	 otro	      ; NO
+	    	movf	 D2,W	      ; (D2)->W
+	    	movwf	 R1	        ; (W)->R1
+	    	sleep
+END
